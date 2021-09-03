@@ -1,0 +1,34 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+}
+
+p {
+    padding: 0.5rem;
+    word-spacing: 0.2rem;
+}
+
+
+// toolbar
+.toolbar {
+    background-color: #d9d9d9;
+    padding: 1rem;
+
+    span {
+        font-size: 25px;
+    }
+
+    .btn {
+        padding: 0.6rem;
+        background-color: #009933;
+        color: #f2f2f2;
+        margin-top: 0.6rem;
+    }
+    
+    .btn:hover {
+        background-color: #4d4d4d;
+        color: #009933;
+    }
+}
