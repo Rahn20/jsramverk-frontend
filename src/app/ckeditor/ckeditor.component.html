@@ -1,1 +1,31 @@
-<ckeditor [editor]="Editor" data="<p>Hello, world!</p>" id="editor-data"> </ckeditor>
+
+<h1>{{ header }}</h1>
+<div class="editor">
+    <ul>
+        <li (click)="printDoc()" class="btn">Visa</li>
+        <li (click)="create()" class="btn create">Skapa</li>
+        <li (click)="update()" class="btn update">Uppdatera</li>
+        <li (click)="reset()" class="btn reset">Återställa</li>
+    </ul>
+</div>
+        
+<ckeditor [editor]="Editor" id="editor-data" [(ngModel)] = "getDocResult" (change)="onChange($event)">
+</ckeditor>
+
+<div class="save-button">
+    <a id="save"></a>
+</div>
+
+<p id="result"> {{ result }}</p>
+
+
+<!--
+    
+<div *ngIf="getDoc.length >= 1">
+    <div *ngFor="let doc of getDoc;">
+        <p>Namn:  {{doc['namn']}} </p>
+        <p>Bor:  {{doc['bor']}}</p>
+    </div>
+</div>
+
+-->
