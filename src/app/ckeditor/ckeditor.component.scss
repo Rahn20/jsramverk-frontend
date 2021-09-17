@@ -1,0 +1,33 @@
+.editor {
+    width: 25%;
+    margin: auto;
+
+    ul {
+        li {
+            display: inline;
+            padding: 1rem;
+            border-right: 3px solid #fff;
+        }
+    }
+    
+    .btn {
+        background-color: #009933;
+        color: #f2f2f2;
+    }
+    
+    .btn:hover {
+        background-color: #4d4d4d;
+        color: #009933;
+        cursor: pointer;
+    }
+
+}
+
+#result {
+    color: #ff0000;
+}
+
+.save-button {
+    padding-top: 1rem;
+}
+
