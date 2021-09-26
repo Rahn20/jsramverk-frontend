@@ -1,5 +1,23 @@
+.style-doc {
+    background-color: honeydew;
+
+    .name {
+        display: inline-block;
+        list-style-type: none;
+    
+        li {
+            cursor: pointer;
+        }
+
+        li:hover {
+            color: red;
+            text-decoration: underline;
+        }
+    }
+}
+
 .editor {
-    width: 25%;
+    width: 50%;
     margin: auto;
 
     ul {
@@ -7,6 +25,11 @@
             display: inline;
             padding: 1rem;
             border-right: 3px solid #fff;
+        }
+
+        #name-doc {
+            padding: 12px 20px;
+            box-sizing: border-box;
         }
     }
     
@@ -20,14 +43,6 @@
         color: #009933;
         cursor: pointer;
     }
-
 }
 
-#result {
-    color: #ff0000;
-}
-
-.save-button {
-    padding-top: 1rem;
-}
 
