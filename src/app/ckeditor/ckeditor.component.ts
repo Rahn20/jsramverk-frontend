@@ -1,15 +1,18 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, Injectable, OnInit} from '@angular/core';
 
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 
 import { HttpClient } from '@angular/common/http';
+import { Data } from './model.testing.data';
 
 @Component({
     selector: 'app-ckeditor',
     templateUrl: './ckeditor.component.html',
     styleUrls: ['./ckeditor.component.scss']
 })
+
+@Injectable({ providedIn: 'root' })
 export class CkeditorComponent implements OnInit {
     public Editor = ClassicEditor;
     public data: any = [];
@@ -22,8 +25,9 @@ export class CkeditorComponent implements OnInit {
     errorMessage: any;
     docId = "";
     getDoc: any = [];
+    test = false;
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {}
 
     ngOnInit(): void {
         this.getAllDocs();
@@ -35,7 +39,7 @@ export class CkeditorComponent implements OnInit {
 
     getAllDocs () {
         this.data = [];
-        this.http.get(this.url)
+        this.http.get<Data[]>(this.url)
             .subscribe(response => {
                 this.getDoc = response;
                 this.getDoc.map((doc:any) => {
@@ -51,9 +55,11 @@ export class CkeditorComponent implements OnInit {
     }
 
     public update() {
-        this.http.put(`${this.url}/update/${this.docId}`, {name: this.header, content: this.getDocResult})
+        this.test = false;
+        this.http.put<Data[]>(`${this.url}/update/${this.docId}`, {name: this.header, content: this.getDocResult})
             .subscribe({
                 next: data => {
+                    this.test = true;
                     this.getAllDocs();
                     console.log("Dokumentet har uppdaterats");
                 },
@@ -66,15 +72,17 @@ export class CkeditorComponent implements OnInit {
 
     public create() {
         let name = (<HTMLInputElement>document.getElementById("name-doc")).value;
+
         let body = {
             "name": name,
             "content": this.onChangeData 
         }
     
         if (name && this.onChangeData) {
-            this.http.post(`${this.url}/create`, body)
+            this.http.post<Data[]>(`${this.url}/create`, body)
             .subscribe({
                 next: data => {
+                    this.test = true;
                     this.getAllDocs();
                     console.log("Nytt dokument har skapats.");
                 },
@@ -92,16 +100,12 @@ export class CkeditorComponent implements OnInit {
     public reset() {
         this.data = [];
 
-        this.http.get(`${this.url}/reset`)
+        this.http.get<Data[]>(`${this.url}/reset`)
             .subscribe({
                 next: Response => {
                     this.getDoc = Response;
-                    let res = this.getDoc[0];
-
-                    this.printDoc(res.id, res.name, res.content);
-                    this.getDoc.map((doc:any) => {
-                        this.data.push(doc);
-                    });
+                    this.test = true;
+                    this.getAllDocs();
                 },
                 error: error => {
                     this.errorMessage = error.message;
