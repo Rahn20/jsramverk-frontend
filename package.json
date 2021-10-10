@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng build --prod --base-href ./ && rsync -av --delete dist/ rahn20@ssh.student.bth.se:www/editor"
+    "deploy": "ng build --prod --base-href ./ && rsync -av --delete dist/ rahn20@ssh.student.bth.se:www/editor",
+    "coverage": "ng test --no-watch --code-coverage"
   },
   "private": true,
   "dependencies": {
