@@ -6,11 +6,21 @@ import { CkeditorComponent } from './ckeditor.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Data } from './model.testing.data';
 
+// testing socket
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+
+
 let testingData: Data[] = [
-    {id_: "123456789", name: "Testing", content: "<p> Tesing Angular</p>"},
-    {id_: "824629649264", name: "Testing 2", content: "<p> Tesing Angular 2</p>"}
+    {_id: "123456789", name: "Testing", content: "<p> Tesing Angular</p>"},
+    {_id: "824629649264", name: "Testing 2", content: "<p> Tesing Angular 2</p>"}
 ];
 
+const config: SocketIoConfig = { 
+    url: 'https://jsramverk-editor-rahn20.azurewebsites.net', 
+    options: {
+        transports: ['websocket'],
+    },
+};
 
 describe('CkeditorComponent', () => {
     let component: CkeditorComponent;
@@ -19,7 +29,7 @@ describe('CkeditorComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ CkeditorComponent ],
-            imports: [ HttpClientTestingModule ],
+            imports: [ HttpClientTestingModule, SocketIoModule.forRoot(config) ]
             //providers: [ CkeditorComponent]
         })
         .compileComponents();
@@ -78,7 +88,7 @@ describe('CkeditorComponent', () => {
 
 
     it('Should update an axisting document', () => {
-        component.docId = testingData[0].id_;
+        component.docId = testingData[0]._id;
         component.header = "Update doc";
         component.getDocResult = "<p> Uppdating doc.</p>";
 
@@ -94,10 +104,10 @@ describe('CkeditorComponent', () => {
     it('Should view the entire document by clicking on the document name', () => {
         let doc = testingData[0];
     
-        component.printDoc(doc['id_'], doc['name'], doc['content']);
+        component.printDoc(doc['_id'], doc['name'], doc['content']);
 
         expect(component.header).toEqual(doc['name']);
-        expect(component.docId).toEqual(doc['id_']);
+        expect(component.docId).toEqual(doc['_id']);
         expect(component.getDocResult).toEqual(doc['content']);
         expect(component.test).toBe(false);
     });

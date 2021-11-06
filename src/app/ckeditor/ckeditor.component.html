@@ -17,17 +17,15 @@
 </div>
 
 
-<ckeditor [editor]="Editor" id="editor-data" [(ngModel)] = "getDocResult" (change)="onChange($event)">
-</ckeditor>
-
-
-<!--
-
-<div *ngIf="getDoc.length >= 1">
-    <div *ngFor="let doc of getDoc;">
-        <p>Namn:  {{doc['namn']}} </p>
-        <p>Bor:  {{doc['bor']}}</p>
-    </div>
+<div (click)="clickDoc()">
+    <ckeditor 
+        (keyup)="onKey($event)"
+        [editor]="Editor" 
+        id="editor-data" 
+        [(ngModel)] = "getDocResult"
+        (change)="onChange($event)">
+    </ckeditor>
 </div>
 
--->
+
+<div id="test"></div>

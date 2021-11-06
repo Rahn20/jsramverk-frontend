@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,7 +9,7 @@
     "test": "ng test",
     "deploy": "ng build --prod --base-href ./ && rsync -av --delete dist/ rahn20@ssh.student.bth.se:www/editor",
     "coverage": "ng test --no-watch --code-coverage",
-    "test-headless":" ng test --watch false --browsers ChromeHeadless"
+    "test-headless": " ng test --watch false --browsers ChromeHeadless"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +23,7 @@
     "@angular/router": "~12.2.0",
     "@ckeditor/ckeditor5-angular": "^2.0.2",
     "@ckeditor/ckeditor5-build-classic": "^29.2.0",
+    "ngx-socket-io": "^4.1.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
