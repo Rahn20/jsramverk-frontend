@@ -1,5 +1,5 @@
 export interface Data {
-    id_: string,
+    _id: string,
     name: string,
     content: string
 }
