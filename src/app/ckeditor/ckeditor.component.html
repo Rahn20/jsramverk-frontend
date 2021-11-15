@@ -2,22 +2,23 @@
 <h1>{{ header }}</h1>
 
 <div class="style-doc"> 
-    <ul *ngFor="let doc of data;" class="name">
-        <li (click)="printDoc(doc['_id'], doc['name'], doc['content'])"> {{ doc['name'] }} </li>
+    <ul>
+        <li *ngFor="let doc of data;" (click)="printDoc(doc['_id'], doc['name'], doc['content'])"> {{ doc['name'] }} </li>
     </ul>
 </div>
 
 <div class="editor">
     <ul>
+        <li (click)="reload()" class="btn">Ladda om</li>
         <li (click)="update()" class="btn">Uppdatera</li>
-        <li (click)="reset()" class="btn">Återställa</li>
+        <li (click)="delete()" class="btn">Radera</li>
         <li (click)="create()" class="btn">Skapa</li>
         <li><input type="text" id="name-doc" placeholder="Dokumentnamn" value=""></li>
     </ul>
 </div>
 
 
-<div (click)="clickDoc()">
+<div class="ckeditor" (click)="clickDoc()">
     <ckeditor 
         (keyup)="onKey($event)"
         [editor]="Editor" 
@@ -26,6 +27,3 @@
         (change)="onChange($event)">
     </ckeditor>
 </div>
-
-
-<div id="test"></div>

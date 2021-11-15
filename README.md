@@ -1,4 +1,5 @@
 [![Build Status](https://app.travis-ci.com/Rahn20/jsramverk-frontend.svg?branch=main)](https://app.travis-ci.com/Rahn20/jsramverk-frontend)
+
 # Frontend
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.3.
