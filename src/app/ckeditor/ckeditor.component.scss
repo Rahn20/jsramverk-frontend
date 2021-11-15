@@ -1,54 +1,66 @@
+
+.ckeditor{
+    width: 75%;
+    float: right;
+}
+
 .style-doc {
     background-color: honeydew;
 
-    .name {
-        display: inline-block;
+    ul {
         list-style-type: none;
-    
+
         li {
-            cursor: pointer;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin: 8px 2px;
+            padding: 15px 32px;
+            border: none;
         }
 
         li:hover {
+            cursor: pointer;
             color: red;
             text-decoration: underline;
+         
         }
     }
 }
 
 .editor {
-    width: 80%;
-    margin: auto;
-
     ul {
+        list-style-type: none;
+        text-align: center;
+
         li {
-            display: inline;
-            padding: 1rem;
-            border-right: 3px solid #fff;
+            display: inline-block;
+            margin: 5px 2px;
+            padding: 13px 29px;
+            font-size: 1.1rem;
+            border: none;
         }
 
         #name-doc {
-            padding: 12px 20px;
+            padding: 10px 18px;
             box-sizing: border-box;
         }
-    }
-    
-    .btn {
-        background-color: #009933;
-        color: #f2f2f2;
-    }
-    
-    .btn:hover {
-        background-color: #4d4d4d;
-        color: #009933;
-        cursor: pointer;
+
+        .btn {
+            background-color: #009933;
+            color: #f2f2f2;
+        }
+        
+        .btn:hover {
+            background-color: #4d4d4d;
+            color: #009933;
+            cursor: pointer;
+        }
     }
 }
 
 @media only screen and (max-width: 1050px) {
-    .editor {
+    .ckeditor {
+        float: none;
         width: 100%;
     }
 }
-
-
