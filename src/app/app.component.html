@@ -3,7 +3,22 @@
 
 
 <div class="content" role="main">
-    <app-ckeditor> </app-ckeditor>
+
+    <div class="frontend" *ngIf="token === 'Token'">
+        <h1 *ngIf="showNav"> {{ title }} </h1>
+
+        <ul *ngIf="showNav" class="user">
+            <a (click)="showNav = false; showEditor = false" routerLink="/login"> <li>Logga in</li> </a>
+            <a (click)="showNav = false; showEditor = false" routerLink="/register"> <li>Registrera</li> </a>
+        </ul>
+
+        <ckeditor class="editor" *ngIf="showEditor" [editor]="Editor" ></ckeditor>
+    </div>
+
+    <app-ckeditor *ngIf="token !== 'Token'"> </app-ckeditor>
+    <app-user *ngIf="token !== 'Token'"> </app-user>
+
 </div>
+
 
 <router-outlet></router-outlet>
