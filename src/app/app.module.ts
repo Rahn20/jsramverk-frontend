@@ -3,15 +3,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
-
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { CkeditorComponent } from './ckeditor/ckeditor.component';
-
 import { HttpClientModule } from '@angular/common/http';
+
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-//const config: SocketIoConfig = { url: 'http://localhost:1337', options: {}};
+import { AppComponent } from './app.component';
+import { CkeditorComponent } from './ckeditor/ckeditor.component';
+import { UserComponent } from './user/user.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+
+
+/*const config: SocketIoConfig = { url: 'http://localhost:1337', options: {}};*/
 const config: SocketIoConfig = { 
     url: 'https://jsramverk-editor-rahn20.azurewebsites.net', 
     options: {
@@ -22,7 +26,10 @@ const config: SocketIoConfig = {
 @NgModule({
     declarations: [
         AppComponent,
-        CkeditorComponent
+        CkeditorComponent,
+        UserComponent,
+        LoginComponent,
+        RegisterComponent
     ],
     imports: [
         BrowserModule,

@@ -1,0 +1,77 @@
+.user {
+    width: 22.5%;
+    float: left;
+    word-wrap: break-word;
+    word-spacing: 2px;
+
+    border: 1px solid #ccc;
+    padding: 10px;
+
+    form {
+        select {
+           padding: 11px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 3px;
+            background-color: #009933;
+            color: #f2f2f2;
+            cursor: pointer;
+            border: 2px solid olive;
+        }
+
+        input:hover {
+            background-color: #006622;
+        }
+    }
+
+    .delete {
+        padding: 10px;
+        margin-top: 60px;
+        cursor: pointer;
+        color: #f2f2f2;
+        background-color: #cc0000;
+        border: 2px solid #b30000;
+    }
+
+    .delete:hover {
+        background-color: #990000;
+    }
+
+    .logout {
+        padding: 8px;
+        float: right;
+        position: relative;
+        bottom: 40px;
+        cursor: pointer;
+        color: #f2f2f2;
+        background-color: rgb(54, 114, 134);
+        border: 2px solid lightblue;
+    }
+
+    .logout:hover {
+        background-color: #0066ff;
+    }
+
+    .users {
+        padding: 8px;
+        cursor: pointer;
+        color: #f2f2f2;
+        background-color: #737373;
+        border: 2px solid #808080;
+        margin-top: 30px;
+    }
+
+    .users:hover {
+        background-color: #999;
+    }
+}
+
+
+@media only screen and (max-width: 1050px) {
+    .user {
+        width: 100%;
+        float: none;
+    }
+}

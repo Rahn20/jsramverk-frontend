@@ -1,0 +1,18 @@
+
+<fieldset>
+    <h2>Logga in</h2>
+
+    <form>
+        <label for="email">Email</label><br>
+        <input type="email" id="email" name="email" required #email><br>
+
+        <label for="password">Lösenord </label><br>
+        <input type="password" id="password" name="password" required minlength="6" #password>
+        
+        <input (click)="showPassword()" type="button" id="show" value="Visa">
+        <br>
+
+        <input (click)="checkValid(email.value, password.value)" type="submit" value="Logga in">
+    </form>
+</fieldset>
+

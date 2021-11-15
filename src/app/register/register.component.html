@@ -1,0 +1,21 @@
+
+
+<fieldset>
+    <h2>Registrera dig här </h2>
+
+    <form>
+        <label for="name">Namn </label><br>
+        <input type="text" id="name" name="name" required #name><br>
+
+        <label for="email">Email</label><br>
+        <input type="email" id="email" name="email" required #email><br>
+
+        <label for="password">Lösenord </label><br>
+        <input type="password" id="password" name="password" required minlength="6" #password>
+        <input (click)="showPassword()" type="button" id="show" value="Visa">
+        <br>
+
+
+        <input (click)="register(name.value, email.value, password.value)" type="submit" value="Registrera">
+    </form>
+</fieldset>

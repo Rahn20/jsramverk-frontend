@@ -1,0 +1,27 @@
+
+
+<div class="user">
+    <p>Inloggad {{ userName }}</p>
+    <button class="logout" (click)="logOut()">Logga ut</button>
+    <p>Email: {{ userEmail }}</p>
+ 
+
+    <form>
+        <label>Tillåt användaren att redigera dokumentet {{ docName }}</label> <br>
+        <select #email>
+            <option value="none"> Välj användare</option>
+            <option *ngFor="let name of allUsers;" value="{{ name['email']}}">{{ name['name'] }}</option>
+        </select>
+        <input type="button" (click)="allowUser(email.value)" value="Tillåt">
+    </form>
+
+    
+    <button class="users" (click)="showAllowedUsers()">Användaren som får redigera {{ docName }} :</button>
+    <ol>
+        <li *ngFor="let user of allowedUsers;"> {{ user }}</li>
+    </ol>
+
+
+    <button class="delete" (click)="deleteUser()">Radera användare</button>
+
+</div>
