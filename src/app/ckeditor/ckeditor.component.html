@@ -10,8 +10,8 @@
 <div class="editor">
     <ul>
         <li (click)="reload()" class="btn">Ladda om</li>
+        <li (click)="delete()" class="btn">Radera Dokoment</li>
         <li (click)="update()" class="btn">Uppdatera</li>
-        <li (click)="delete()" class="btn">Radera</li>
         <li (click)="create()" class="btn">Skapa</li>
         <li><input type="text" id="name-doc" placeholder="Dokumentnamn" value=""></li>
     </ul>
@@ -27,3 +27,4 @@
         (change)="onChange($event)">
     </ckeditor>
 </div>
+

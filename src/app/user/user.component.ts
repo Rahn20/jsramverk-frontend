@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-
-import { HttpClient } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
+// token
 import { TokenService } from '../token.service';
+
+// graphql
+import { Subscription } from 'rxjs';
+import { Apollo, QueryRef } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 
 @Component({
@@ -11,10 +16,7 @@ import { TokenService } from '../token.service';
     templateUrl: './user.component.html',
     styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit {
-    private url = `https://jsramverk-editor-rahn20.azurewebsites.net/me-api`;
-    //private url = `http://localhost:1337/me-api`;
-
+export class UserComponent implements OnInit, OnDestroy {
     public userName: string = "";
     public allUsers: any = [];
     public allowedUsers: any = [];
@@ -23,12 +25,12 @@ export class UserComponent implements OnInit {
 
     private userId: string = "";
     private docId: string = "";
-    private getUser: any = [];
     public token: string = "";
-    private data: any;
 
+    private querySubscription: any = Subscription;
+    postsQuery: any =  QueryRef;
 
-    constructor(private http: HttpClient, private tokenService: TokenService, private router: Router) { }
+    constructor(private tokenService: TokenService, private router: Router, private apollo: Apollo) { }
 
     ngOnInit(): void {
         this.getUserInfo();
@@ -44,69 +46,103 @@ export class UserComponent implements OnInit {
         this.tokenService.currentDocName.subscribe(name => this.docName = name);
     }
 
+    ngOnDestroy() {
+        this.querySubscription.unsubscribe();
+    }
+
+    
+    refresh() {
+        this.postsQuery.refetch();
+    }
+
     showAllowedUsers() {
-        this.allowedUsers = [];
-        this.http.get(`${this.url}/users/${this.userId}`)
-            .subscribe(response => {
-                this.getUser = response;
-                this.getUser.map((user: any) => {
-                    user.docs.map((doc: any) =>{
-                        if (doc._id === this.docId) {
-                            if (doc.allowed_users) {
-                                if (doc.allowed_users.length >= 1) {
-                                    this.allowedUsers = doc.allowed_users;
-                                } else {
-                                    this.allowedUsers = ["None"]
-                                }
-                            } else {
-                                this.allowedUsers = ["Du äger inte dokumentet."]
-                            }
+        this.apollo.watchQuery({
+            query: gql`
+                query {
+                    user (_id: "${this.userId}") {
+                        _id
+                        name
+                        email
+                        docs {
+                            _id
+                            allowed_users
                         }
-                    });
+                    }
+                }
+            `,
+        }).valueChanges
+            .subscribe((data: any) => {
+                this.refresh();
+                (data.data.user[0].docs).map((doc: any) => {
+                    if (doc._id === this.docId) {
+                        this.allowedUsers = doc.allowed_users;
+                    }
                 });
-            });
+        });
     }
 
     public getAllUsers() {
         this.allUsers = [];
-        this.http.get(`${this.url}/users`)
-            .subscribe(response => {
-                this.getUser = response;
-                this.getUser.map((user: any) => {
+        this.postsQuery = this.apollo.watchQuery({
+            query: gql`
+                query {
+                    getUsers {
+                        _id
+                        name
+                        email
+                    }
+                }
+            `,
+        });
+        this.querySubscription = this.postsQuery
+            .valueChanges
+            .subscribe((data: any) => {
+                (data.data.getUsers).map((user: any) => {
                     if(user._id !== this.userId) {
                         this.allUsers.push(user);
                     }
                 });
-            });
+        });
     }
 
     public allowUser(email: string) {
-        let headers = { "x-access-token": this.token };
-        let body = {
-            email: email,
-            doc_id: this.docId
-        }
-
-        this.http.put(`${this.url}/users/`, body, {headers})
-            .subscribe(response => {
-                this.data = response;
-                
-                if(this.data.FromUser) {
-                    console.log("Från", this.data.FromUser, "till", this.data.ToUser);
-                } else {
-                    console.log("Error");
-                    console.log(this.data);
+        this.apollo.mutate ({
+            mutation: gql`
+                mutation {
+                    allowUser(docId: "${this.docId}", email: "${email}") {
+                        data
+                    }
                 }
-            });
+            `,
+
+            context: {
+                headers: new HttpHeaders().set('x-access-token', this.token)
+            },
+        }).subscribe((data: any) => {
+            console.log(data.data);
+        });
+
+        this.refresh();
     }
 
     public deleteUser() {
-        let headers = { "x-access-token": this.token };
+        this.apollo.mutate ({
+            mutation: gql`
+                mutation {
+                    deleteUser {
+                        data
+                    }
+                }
+            `,
 
-        this.http.delete(`${this.url}/users`, {headers})
-            .subscribe(response => {
-            });
+            context: {
+                headers: new HttpHeaders().set('x-access-token', this.token)
+            },
+        }).subscribe((data: any) => {
+            console.log(data.data);
+        });
 
+        this.refresh();
         this.tokenService.changeToken("Token");
         this.router.navigateByUrl('/register');
     }

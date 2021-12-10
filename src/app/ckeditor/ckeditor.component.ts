@@ -1,13 +1,18 @@
-import { Component, Injectable, OnInit} from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit} from '@angular/core';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
-import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 
-
-import { Data } from './model.testing.data';
+// sockets
 import { Socket } from 'ngx-socket-io';
+
+// token
 import { TokenService } from '../token.service';
 
+// graphql
+import { Subscription } from 'rxjs';
+import { Apollo, QueryRef } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Component({
     selector: 'app-ckeditor',
@@ -16,32 +21,33 @@ import { TokenService } from '../token.service';
 })
 
 @Injectable({ providedIn: 'root' })
-export class CkeditorComponent implements OnInit {
+export class CkeditorComponent implements OnInit, OnDestroy {
     public Editor = ClassicEditor;
     public data: any = [];
     public getDocResult= "";
     public header = "Frontend";
-    private url = `https://jsramverk-editor-rahn20.azurewebsites.net/me-api`;
-    //private url = `http://localhost:1337/me-api`;
 
     onChangeData = "";
-    errorMessage: any;
     docId = "";
-    getDoc: any = [];
-    getUser: any = [];
     test = false;
 
     public token: string = "";
     private userId: string = "";
 
-    constructor(private http: HttpClient, private socket:Socket, private tokenService: TokenService) {
-    }
+    private querySubscription: any = Subscription;
+    postsQuery: any =  QueryRef;
+
+    constructor(private socket:Socket, private tokenService: TokenService, private apollo: Apollo) {}
 
     ngOnInit(): void {
         this.tokenService.currentToken.subscribe(token => this.token = token);
         this.tokenService.currentUser.subscribe(id => this.userId = id);
 
         this.getUserDocs();
+    }
+
+    ngOnDestroy() {
+        this.querySubscription.unsubscribe();
     }
 
     sendDocUpdate() { 
@@ -78,32 +84,33 @@ export class CkeditorComponent implements OnInit {
         });
     }
 
+    refresh() {
+        this.postsQuery.refetch();
+    }
+
     public reload () {
-        this.getUserDocs();
+        this.refresh();
     }
 
     public getUserDocs () {
         this.data = [];
-        this.http.get(`${this.url}/users/${this.userId}`)
-            .subscribe(response => {
-                this.getUser = response;
-                this.getUser.map((user:any) => {
-                    user.docs.map((doc: { _id: string; }) => {
-                        this.specificDoc(doc._id);
-                    });
-                });
-            });
-    }
-
-    getAllDocs () {
-        this.data = [];
-        this.http.get<Data[]>(this.url)
-            .subscribe(response => {
-                this.getDoc = response;
-                this.getDoc.map((doc:any) => {
-                    this.data.push(doc);
-                });
-            });
+        this.postsQuery = this.apollo.watchQuery({
+            query: gql`
+                query {
+                    userDocs(_id: "${this.userId}") {
+                        _id
+                        name
+                        content
+                    }
+                }
+            `,
+            //pollInterval: 500,
+        });
+        this.querySubscription = this.postsQuery
+            .valueChanges
+            .subscribe((data: any) => {
+                this.data = data.data.userDocs;
+        });
     }
 
     public printDoc(id:string, name:string, content:string) {
@@ -111,103 +118,73 @@ export class CkeditorComponent implements OnInit {
         this.header = name;
         this.getDocResult = content;
 
+        this.refresh();
         this.tokenService.changeDocName(this.header);
         this.tokenService.changeDocId(this.docId);
     }
 
-    public delete() {
-        let headers = { "x-access-token": this.token }
-
-        this.http.delete<Data[]>(`${this.url}/delete/${this.docId}`, {headers})
-            .subscribe({
-                next: data => {
-                    this.test = true;
-                    this.getUserDocs();
-                    console.log("Documentet har raderats.");
+    public create() {
+        let name = (<HTMLInputElement>document.getElementById("name-doc")).value;
+    
+        if (name && this.onChangeData) {
+            this.apollo.mutate ({
+                mutation: gql`
+                    mutation {
+                        addDoc(name: "${name}", content: "${this.onChangeData}") {
+                            data
+                        }
+                    }
+                `,
+    
+                context: {
+                    headers: new HttpHeaders().set('x-access-token', this.token)
                 },
-                error: error => {
-                    this.errorMessage = error.message;
-                    console.error('There was an error!', error);
-                }
-            })
+            }).subscribe((data:any) => {
+                this.test = true;
+                this.refresh();
+            });
+        } else {
+            console.log("Du måste skriva dokument namn och innehåll");
+        }
     }
 
     public update() {
         this.test = false;
-        let headers = { "x-access-token": this.token }
-
-        this.http.put<Data[]>(`${this.url}/update`, {_id: this.docId, content: this.getDocResult}, {headers})
-            .subscribe({
-                next: data => {
-                    this.test = true;
-                    this.getUserDocs();
-                    console.log("Dokumentet har uppdaterats");
-                },
-                error: error => {
-                    this.errorMessage = error.message;
-                    console.error('There was an error!', error);
+        this.apollo.mutate ({
+            mutation: gql`
+                mutation {
+                    updateDoc(docId: "${this.docId}", content: "${this.getDocResult}") {
+                        data
+                    }
                 }
-            })
+            `,
+
+            context: {
+                headers: new HttpHeaders().set('x-access-token', this.token)
+            },
+        }).subscribe((data:any) => {
+            this.test = true;
+            this.refresh();
+        });
     }
 
-    private specificDoc(id: string) {
-        this.http.get<Data[]>(`${this.url}/document/${id}`)
-            .subscribe({
-                next: data => {
-                    this.getDoc = data;
-                    this.getDoc.map((doc:any) => {
-                        this.data.push(doc);
-                    });
-                },
-                error: error => {
-                    this.errorMessage = error.message;
-                    console.error('There was an error!', error);
+    public delete() {
+        this.apollo.mutate ({
+            mutation: gql`
+                mutation {
+                    deleteDoc(id: "${this.docId}") {
+                        data
+                    }
                 }
-            });
-    }
+            `,
 
-    public create() {
-        let name = (<HTMLInputElement>document.getElementById("name-doc")).value;
-        let headers = { "x-access-token": this.token }
-        let body = {
-            "name": name,
-            "content": this.onChangeData 
-        }
-    
-        if (name && this.onChangeData) {
-            this.http.post<Data[]>(`${this.url}/create`, body, {headers})
-            .subscribe({
-                next: data => {
-                    this.test = true;
-                    this.getUserDocs();
-                    console.log("Nytt dokument har skapats.");
-                },
-                error: error => {
-                    this.errorMessage = error.message;
-                    console.error('There was an error!', error);
-                }
-            })
-        } else {
-            console.log("Du måste skriva dokument namn och innehåll");
-        }
-
-    }
-
-    reset() {
-        this.data = [];
-
-        this.http.get<Data[]>(`${this.url}/reset`)
-            .subscribe({
-                next: Response => {
-                    this.getDoc = Response;
-                    this.test = true;
-                    this.getUserDocs();
-                },
-                error: error => {
-                    this.errorMessage = error.message;
-                    console.error('There was an error!', error);
-                }
-            });
+            context: {
+                headers: new HttpHeaders().set('x-access-token', this.token)
+            },
+        }).subscribe((data:any) => {
+            this.test = true;
+            this.refresh();
+        });
     }
 }
 
