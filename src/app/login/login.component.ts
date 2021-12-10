@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
     }
 
     private login(body: object) {
-        this.http.post(`${this.url}/users/login`, body)
+        this.http.post(`${this.url}/login`, body)
             .subscribe(response => {
                 this.getData = response;
                 this.token = this.getData.data.token;

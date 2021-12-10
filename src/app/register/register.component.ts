@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit {
         let OK = regex.exec(password);
 
         if (email.includes("@") && OK && name) {
-            this.http.post(`${this.url}/users/register`, body)
+            this.http.post(`${this.url}/register`, body)
             .subscribe(response => {
                 this.router.navigateByUrl('/login');
             });

@@ -3,6 +3,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import { TokenService } from './token.service';
 
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -15,8 +16,7 @@ export class AppComponent{
     public showNav = true;
     public token: string = "";
 
-    constructor(private tokenService: TokenService) {
-    }
+    constructor(private tokenService: TokenService) {}
 
     ngOnInit(): void {
         this.tokenService.currentToken.subscribe(token => this.token = token);
