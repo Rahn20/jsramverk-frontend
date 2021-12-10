@@ -13,9 +13,10 @@ import { CkeditorComponent } from './ckeditor/ckeditor.component';
 import { UserComponent } from './user/user.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { GraphQLModule } from './graphql.module';
 
 
-/*const config: SocketIoConfig = { url: 'http://localhost:1337', options: {}};*/
+//const config: SocketIoConfig = { url: 'http://localhost:1337', options: {}};
 const config: SocketIoConfig = { 
     url: 'https://jsramverk-editor-rahn20.azurewebsites.net', 
     options: {
@@ -37,7 +38,8 @@ const config: SocketIoConfig = {
         FormsModule,
         CKEditorModule,
         HttpClientModule,
-        SocketIoModule.forRoot(config)
+        SocketIoModule.forRoot(config),
+        GraphQLModule
     ],
     providers: [],
     bootstrap: [AppComponent]
