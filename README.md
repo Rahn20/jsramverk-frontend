@@ -2,7 +2,7 @@
 
 # Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.3.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.3. Angular was updated on 2021-12-24 to version 13.1.1
 
 ## Test
 
