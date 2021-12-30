@@ -1,7 +1,9 @@
 import { Component, Injectable, OnDestroy, OnInit} from '@angular/core';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { HttpHeaders } from '@angular/common/http';
+
+//editor 
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 // sockets
 import { Socket } from 'ngx-socket-io';
@@ -11,8 +13,15 @@ import { TokenService } from '../token.service';
 
 // graphql
 import { Subscription } from 'rxjs';
-import { Apollo, QueryRef } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { Apollo, QueryRef, gql } from 'apollo-angular';
+
+//interface
+import { Data, Document } from './model.data';
+
+//pdf
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import htmlToPdfmake from 'html-to-pdfmake';
 
 @Component({
     selector: 'app-ckeditor',
@@ -24,22 +33,23 @@ import gql from 'graphql-tag';
 export class CkeditorComponent implements OnInit, OnDestroy {
     public Editor = ClassicEditor;
     public data: any = [];
-    public getDocResult= "";
-    public header = "Frontend";
+    public getDocResult: string = "";
+    public header: string = "Frontend";
 
-    onChangeData = "";
-    docId = "";
-    test = false;
+    private onChangeData: string = "";
+    private docId: string = "";
 
     public token: string = "";
-    private userId: string = "";
+    public userId: string = "";
 
-    private querySubscription: any = Subscription;
-    postsQuery: any =  QueryRef;
+    public querySubscription: any = Subscription;
+    private postsQuery: any =  QueryRef;
 
     constructor(private socket:Socket, private tokenService: TokenService, private apollo: Apollo) {}
 
     ngOnInit(): void {
+        (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
+
         this.tokenService.currentToken.subscribe(token => this.token = token);
         this.tokenService.currentUser.subscribe(id => this.userId = id);
 
@@ -50,7 +60,7 @@ export class CkeditorComponent implements OnInit, OnDestroy {
         this.querySubscription.unsubscribe();
     }
 
-    sendDocUpdate() { 
+    private sendDocUpdateSocket() { 
         let x = {
             _id: this.docId,
             name: this.header,
@@ -63,12 +73,20 @@ export class CkeditorComponent implements OnInit, OnDestroy {
         });
     }
 
+    public generatePDF() {
+        let html = htmlToPdfmake(`<h1> ${this.header}</h1> ${this.getDocResult}`);
+        let content = {content:html};
+
+        pdfMake.createPdf(content).open();
+    }
+
+
     public onKey(event: any) {
-        this.sendDocUpdate();
+        this.sendDocUpdateSocket();
     }
 
     public clickDoc() {
-        this.sendDocUpdate();
+        this.sendDocUpdateSocket();
     }
 
     public onChange({ editor }: ChangeEvent) {
@@ -78,23 +96,19 @@ export class CkeditorComponent implements OnInit, OnDestroy {
             if (this.docId === res["_id"]) {
                 if (this.getDocResult === res['content']) {
                     this.socket.emit('create', this.docId);
-                    this.sendDocUpdate();
+                    this.sendDocUpdateSocket();
                 }
             }
         });
     }
 
-    refresh() {
+    public refresh() {
         this.postsQuery.refetch();
-    }
-
-    public reload () {
-        this.refresh();
     }
 
     public getUserDocs () {
         this.data = [];
-        this.postsQuery = this.apollo.watchQuery({
+        this.postsQuery = this.apollo.watchQuery<Document>({
             query: gql`
                 query {
                     userDocs(_id: "${this.userId}") {
@@ -127,7 +141,7 @@ export class CkeditorComponent implements OnInit, OnDestroy {
         let name = (<HTMLInputElement>document.getElementById("name-doc")).value;
     
         if (name && this.onChangeData) {
-            this.apollo.mutate ({
+            this.apollo.mutate<Data>({
                 mutation: gql`
                     mutation {
                         addDoc(name: "${name}", content: "${this.onChangeData}") {
@@ -140,7 +154,6 @@ export class CkeditorComponent implements OnInit, OnDestroy {
                     headers: new HttpHeaders().set('x-access-token', this.token)
                 },
             }).subscribe((data:any) => {
-                this.test = true;
                 this.refresh();
             });
         } else {
@@ -149,8 +162,7 @@ export class CkeditorComponent implements OnInit, OnDestroy {
     }
 
     public update() {
-        this.test = false;
-        this.apollo.mutate ({
+        this.apollo.mutate<Data>({
             mutation: gql`
                 mutation {
                     updateDoc(docId: "${this.docId}", content: "${this.getDocResult}") {
@@ -163,13 +175,12 @@ export class CkeditorComponent implements OnInit, OnDestroy {
                 headers: new HttpHeaders().set('x-access-token', this.token)
             },
         }).subscribe((data:any) => {
-            this.test = true;
             this.refresh();
         });
     }
 
     public delete() {
-        this.apollo.mutate ({
+        this.apollo.mutate<Data>({
             mutation: gql`
                 mutation {
                     deleteDoc(id: "${this.docId}") {
@@ -182,7 +193,6 @@ export class CkeditorComponent implements OnInit, OnDestroy {
                 headers: new HttpHeaders().set('x-access-token', this.token)
             },
         }).subscribe((data:any) => {
-            this.test = true;
             this.refresh();
         });
     }
