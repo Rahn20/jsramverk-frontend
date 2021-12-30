@@ -17,6 +17,7 @@ import { GraphQLModule } from './graphql.module';
 
 
 //const config: SocketIoConfig = { url: 'http://localhost:1337', options: {}};
+
 const config: SocketIoConfig = { 
     url: 'https://jsramverk-editor-rahn20.azurewebsites.net', 
     options: {

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 
+@Injectable({ providedIn: 'root' })
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',

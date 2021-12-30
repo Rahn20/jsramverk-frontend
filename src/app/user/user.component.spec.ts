@@ -1,32 +1,50 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { Subscription } from 'rxjs';
 
+// testing router
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+// apollo testing module
+import { ApolloTestingModule, ApolloTestingController } from 'apollo-angular/testing';
 
+// component
 import { UserComponent } from './user.component';
-import { Router } from '@angular/router';
+
+//service
+import { TokenService } from 'app/token.service';
+
 
 describe('UserComponent', () => {
     let component: UserComponent;
-    let httpMock: HttpTestingController;
-    let url: "https://jsramverk-editor-rahn20.azurewebsites.net/me-api";
-    //let url: "http://localhost:1337/me-api";
+    let apolloTestingController: ApolloTestingController;
+    let service: TokenService;
+
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ UserComponent ],
-            imports: [ HttpClientTestingModule ],
-            providers: [UserComponent, Router]
+            imports: [ RouterTestingModule, ApolloTestingModule ],
+            providers: [TokenService]
         })
         .compileComponents();
 
         component = TestBed.inject(UserComponent);
-        httpMock = TestBed.inject(HttpTestingController);
+        service = TestBed.inject(TokenService);
+        apolloTestingController = TestBed.inject(ApolloTestingController);
     });
 
-    it('should create', () => {
-        if (component.token) {
-            expect(component).toBeTruthy();
-        }
+    beforeEach(() => {
+        // After every test, assert that there are no more pending requests.
+        apolloTestingController.verify();
+
+        // ngOnDestroy
+        component.querySubscription = new Subscription();
+        spyOn(component.querySubscription, 'unsubscribe');
+        component.ngOnDestroy();
+        expect(component.querySubscription.unsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    it('should create the app', () => {
+        expect(component).toBeTruthy();
     });
 });

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { TokenService } from '../token.service';
 
+
+@Injectable({ providedIn: 'root' })
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
@@ -14,7 +16,6 @@ export class LoginComponent implements OnInit {
     //private url = `http://localhost:1337/me-api`;
     private getData: any = [];
     private token: string = "";
-
 
     constructor(private http: HttpClient, private router: Router, private tokenService: TokenService) { }
 
@@ -35,7 +36,7 @@ export class LoginComponent implements OnInit {
         }
     }
 
-    showPassword() {
+    public showPassword() {
         let pass = (<HTMLInputElement>document.getElementById("password"));
         let button = (<HTMLButtonElement>document.getElementById("show"));
 
@@ -62,7 +63,7 @@ export class LoginComponent implements OnInit {
             });
     }
 
-    getToken(): void {
+    private getToken(): void {
         this.tokenService.currentToken
             .subscribe(token => this.token = token);
     }
