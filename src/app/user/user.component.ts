@@ -1,16 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-// token
+// token service
 import { TokenService } from '../token.service';
+
 
 // graphql
 import { Subscription } from 'rxjs';
-import { Apollo, QueryRef } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { Apollo, QueryRef, gql } from 'apollo-angular';
 
 
+@Injectable({ providedIn: 'root' })
 @Component({
     selector: 'app-user',
     templateUrl: './user.component.html',
@@ -25,10 +26,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
     private userId: string = "";
     private docId: string = "";
-    public token: string = "";
+    private token: string = "";
 
-    private querySubscription: any = Subscription;
-    postsQuery: any =  QueryRef;
+    public querySubscription: any = Subscription;
+    private postsQuery: any =  QueryRef;
 
     constructor(private tokenService: TokenService, private router: Router, private apollo: Apollo) { }
 
@@ -106,7 +107,7 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     public allowUser(email: string) {
-        this.apollo.mutate ({
+        this.apollo.mutate({
             mutation: gql`
                 mutation {
                     allowUser(docId: "${this.docId}", email: "${email}") {
@@ -126,7 +127,7 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     public deleteUser() {
-        this.apollo.mutate ({
+        this.apollo.mutate({
             mutation: gql`
                 mutation {
                     deleteUser {

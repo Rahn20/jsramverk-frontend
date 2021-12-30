@@ -1,10 +1,11 @@
 
-.ckeditor{
-    width: 75%;
-    float: right;
+.grid-container {
+    display: grid;
+    //grid-gap: 10px;
+    grid-template-columns: 17% 63% 20%;
 }
 
-.style-doc {
+.list-documents {
     background-color: honeydew;
 
     ul {
@@ -12,32 +13,30 @@
 
         li {
             font-size: 1.1rem;
-            display: inline-block;
-            margin: 8px 2px;
-            padding: 15px 32px;
-            border: none;
+            margin: 13px 0;
+            text-decoration: underline;
         }
 
         li:hover {
             cursor: pointer;
             color: red;
-            text-decoration: underline;
          
         }
     }
 }
 
-.editor {
+.nav-editor {
+    grid-column: 1 / -1;
+
     ul {
         list-style-type: none;
         text-align: center;
 
         li {
             display: inline-block;
-            margin: 5px 2px;
+            margin-right: 10px;
             padding: 13px 29px;
             font-size: 1.1rem;
-            border: none;
         }
 
         #name-doc {
@@ -58,9 +57,28 @@
     }
 }
 
-@media only screen and (max-width: 1050px) {
+@media (max-width: 820px) {
     .ckeditor {
-        float: none;
+        grid-column: 1/-1;
         width: 100%;
+    }
+    
+    .nav-editor li {
+        width: 80%;
+    }
+
+    .list-documents {
+        grid-column: 1/-1;
+
+        ul {
+            li {
+                display: inline;
+                padding: 10px;
+            }
+        }
+    }
+
+    .user {
+        grid-column: 1 / -1; 
     }
 }

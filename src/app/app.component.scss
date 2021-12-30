@@ -6,7 +6,11 @@
 }
 
 h1 {
-    margin: 0.5rem;
+    margin: 1rem;
+}
+
+#editor {
+    width: 70%;
 }
 
 .user {
@@ -15,7 +19,6 @@ h1 {
     background-color: honeydew;
 
     li {
-        display: inline;
         padding: 1rem;
         font-size: 1.1rem;
 
@@ -40,6 +43,5 @@ h1 {
 @media only screen and (max-width: 1050px) {
     .editor {
         width: 100%;
-        float: none;
     }
 }
